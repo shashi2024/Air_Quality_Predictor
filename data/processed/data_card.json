@@ -1,0 +1,49 @@
+{
+  "dataset_name": "EPA dC/dN Tree Carbon Response to Nitrogen Deposition",
+  "doi": "https://doi.org/10.23719/1528045",
+  "n_total": 110650,
+  "n_train": 77455,
+  "n_val": 16597,
+  "n_test": 16598,
+  "n_features": 19,
+  "features": [
+    "EXPN.ha_scaled",
+    "LAT_scaled",
+    "LON_scaled",
+    "eco.EXPN.ha_scaled",
+    "feat_carbon_sink",
+    "feat_eco3_target_mean",
+    "feat_eco_state_ratio",
+    "feat_enc_NA_L1CODE",
+    "feat_enc_NA_L3CODE",
+    "feat_enc_US_L4CODE",
+    "feat_enc_state",
+    "feat_expanded_per_ha",
+    "feat_growth_share",
+    "feat_gs_ratio",
+    "feat_lat_bin",
+    "feat_lat_x_eco1",
+    "feat_log_magnitude",
+    "feat_lon_bin",
+    "state.EXPN.ha_scaled"
+  ],
+  "targets": {
+    "regression_raw": "TPH.gs.dC.dN0.01",
+    "regression_log": "target_log",
+    "binary_classification": "target_binary",
+    "multiclass_3": "target_class3"
+  },
+  "split_strategy": "70/15/15 stratified by NA_L1CODE ecoregion",
+  "sample_weight_col": "sample_weight",
+  "random_state": 42,
+  "cv_strategy": "KFold/StratifiedKFold n_splits=5",
+  "preprocessing": [
+    "IQR winsorization (1st-99th pct)",
+    "Median imputation for numeric",
+    "UNKNOWN fill for categoricals",
+    "Label encoding for ecoregion codes",
+    "OHE for NA_L1CODE",
+    "RobustScaler for numeric features",
+    "Signed log1p target transform"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "final_features": [
+    "EXPN.ha_scaled",
+    "LAT_scaled",
+    "LON_scaled",
+    "eco.EXPN.ha_scaled",
+    "feat_carbon_sink",
+    "feat_eco3_target_mean",
+    "feat_eco_state_ratio",
+    "feat_enc_NA_L1CODE",
+    "feat_enc_NA_L3CODE",
+    "feat_enc_US_L4CODE",
+    "feat_enc_state",
+    "feat_expanded_per_ha",
+    "feat_growth_share",
+    "feat_gs_ratio",
+    "feat_lat_bin",
+    "feat_lat_x_eco1",
+    "feat_log_magnitude",
+    "feat_lon_bin",
+    "state.EXPN.ha_scaled"
+  ],
+  "target": "TPH.gs.dC.dN0.01",
+  "target_log": "target_log",
+  "target_binary": "target_binary",
+  "target_class3": "target_class3",
+  "id_col": "PLT_CN",
+  "n_features": 19,
+  "n_rows": 110650
+}

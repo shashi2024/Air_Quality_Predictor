@@ -1,0 +1,68 @@
+{
+  "id_cols": [
+    "PLT_CN"
+  ],
+  "target_cols": [
+    "TPH.gs.dC.dN0.01",
+    "TPH.s.dC.dN0.01",
+    "TPH.g.dC.dN0.01",
+    "EXPN.ha.TPH.gs.dC.dN0.01",
+    "EXPN.ha.TPH.s.dC.dN0.01",
+    "EXPN.ha.TPH.g.dC.dN0.01",
+    "target_log",
+    "target_binary",
+    "target_class3"
+  ],
+  "numeric_cols": [
+    "LAT",
+    "LON",
+    "EXPN.ha",
+    "eco.EXPN.ha",
+    "state.EXPN.ha"
+  ],
+  "categorical_cols": [
+    "US_L4CODE",
+    "NA_L3CODE",
+    "NA_L1CODE",
+    "e3",
+    "e1",
+    "e4",
+    "e3.state",
+    "e4.state",
+    "e1.state",
+    "STATECD",
+    "COUNTYCD"
+  ],
+  "encoded_cols": [
+    "US_L4CODE_enc",
+    "NA_L3CODE_enc",
+    "NA_L1CODE_enc",
+    "e3_enc",
+    "e1_enc",
+    "e4_enc",
+    "e3.state_enc",
+    "e4.state_enc",
+    "e1.state_enc",
+    "STATECD_enc",
+    "COUNTYCD_enc"
+  ],
+  "scaled_cols": [
+    "LAT_scaled",
+    "LON_scaled",
+    "EXPN.ha_scaled",
+    "eco.EXPN.ha_scaled",
+    "state.EXPN.ha_scaled"
+  ],
+  "ohe_cols": [
+    "NA_L1CODE_6.0",
+    "NA_L1CODE_7.0",
+    "NA_L1CODE_8.0",
+    "NA_L1CODE_9.0",
+    "NA_L1CODE_10.0",
+    "NA_L1CODE_11.0",
+    "NA_L1CODE_12.0",
+    "NA_L1CODE_13.0",
+    "NA_L1CODE_15.0",
+    "NA_L1CODE_UNKNOWN"
+  ]
+}
