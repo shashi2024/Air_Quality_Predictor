@@ -1,0 +1,38 @@
+# Data (raw CSVs tracked via Git LFS or excluded)
+data/raw/*.csv
+data/interim/*.csv
+data/interim/*.parquet
+data/processed/*.csv
+data/processed/*.parquet
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Outputs (optionally tracked)
+outputs/figures/*.png
+outputs/figures/*.svg
+outputs/reports/*.html
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
