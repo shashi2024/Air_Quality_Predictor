@@ -537,7 +537,7 @@ class SVMVisualizer:
         train_sizes, train_scores, val_scores = learning_curve(
             model, X, y, cv=cv, scoring=scoring,
             train_sizes=np.linspace(0.1, 1.0, 10),
-            n_jobs=-1, random_state=RANDOM_STATE,
+            n_jobs=-1,
         )
 
         train_mean = -train_scores.mean(axis=1) if "neg" in scoring else train_scores.mean(axis=1)
@@ -640,3 +640,211 @@ def save_metrics(metrics, filepath):
     with open(filepath, "w") as f:
         json.dump(metrics, f, indent=2, default=str)
     print(f"📝 Metrics saved to: {filepath}")
+
+
+# ======================================================================
+# Kernel Comparison Utility  (Rubric Criterion 4 — Algorithm Justification)
+# ======================================================================
+
+def compare_kernels(X_train, y_train, X_val, y_val,
+                    task="classification", C=1.0,
+                    save_path=None):
+    """
+    Train SVM with three kernels (linear, RBF, polynomial) and compare
+    their validation performance side by side.
+
+    Parameters
+    ----------
+    X_train, y_train : array-like  Training data (already scaled).
+    X_val,   y_val   : array-like  Validation data (already scaled).
+    task             : str         'classification' or 'regression'.
+    C                : float       Regularisation parameter for all kernels.
+    save_path        : str | None  If given, saves the comparison chart.
+
+    Returns
+    -------
+    results_df : pd.DataFrame  Per-kernel metric table.
+    """
+    kernels = ["linear", "rbf", "poly"]
+    records = []
+
+    for kernel in kernels:
+        print(f"  Training {kernel} kernel ...", end=" ", flush=True)
+        t0 = __import__("time").time()
+
+        if task == "classification":
+            model = SVC(
+                kernel=kernel, C=C, gamma="scale",
+                probability=True, class_weight="balanced",
+                random_state=RANDOM_STATE,
+            )
+            model.fit(X_train, y_train)
+            y_pred = model.predict(X_val)
+            acc  = accuracy_score(y_val, y_pred)
+            prec = precision_score(y_val, y_pred, average="weighted", zero_division=0)
+            rec  = recall_score(y_val, y_pred,    average="weighted", zero_division=0)
+            f1   = f1_score(y_val, y_pred,         average="weighted", zero_division=0)
+            records.append({
+                "Kernel": kernel,
+                "Accuracy": round(acc,  4),
+                "Precision": round(prec, 4),
+                "Recall":    round(rec,  4),
+                "F1 Score":  round(f1,   4),
+            })
+        else:
+            model = SVR(kernel=kernel, C=C, gamma="scale")
+            model.fit(X_train, y_train)
+            y_pred = model.predict(X_val)
+            records.append({
+                "Kernel": kernel,
+                "MAE":  round(mean_absolute_error(y_val, y_pred), 4),
+                "RMSE": round(np.sqrt(mean_squared_error(y_val, y_pred)), 4),
+                "R2":   round(r2_score(y_val, y_pred), 4),
+            })
+
+        elapsed = __import__("time").time() - t0
+        print(f"done ({elapsed:.1f}s)")
+
+    results_df = pd.DataFrame(records).set_index("Kernel")
+
+    # ── Plot ────────────────────────────────────────────────────────────
+    metrics_to_plot = (
+        ["Accuracy", "Precision", "Recall", "F1 Score"]
+        if task == "classification"
+        else ["MAE", "RMSE", "R2"]
+    )
+    colors = ["#185FA5", "#1D9E75", "#854F0B"]   # blue, teal, amber
+
+    fig, axes = plt.subplots(1, len(metrics_to_plot),
+                              figsize=(4 * len(metrics_to_plot), 5))
+    if len(metrics_to_plot) == 1:
+        axes = [axes]
+
+    for ax, metric in zip(axes, metrics_to_plot):
+        vals = results_df[metric].values
+        bars = ax.bar(kernels, vals, color=colors, edgecolor="black",
+                      linewidth=0.6, alpha=0.88)
+        ax.set_title(metric, fontsize=13, fontweight="bold")
+        ax.set_ylim(0, max(vals) * 1.2 if max(vals) > 0 else 1)
+        ax.set_xlabel("Kernel", fontsize=11)
+        ax.grid(True, axis="y", alpha=0.3)
+        for bar, val in zip(bars, vals):
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                bar.get_height() + max(vals) * 0.02,
+                f"{val:.4f}", ha="center", va="bottom", fontsize=10,
+            )
+
+    task_label = "SVC" if task == "classification" else "SVR"
+    fig.suptitle(
+        f"{task_label} Kernel Comparison (C={C}) — Validation Set",
+        fontsize=14, fontweight="bold",
+    )
+    plt.tight_layout()
+    if save_path:
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        print(f"📊 Kernel comparison chart saved to: {save_path}")
+    plt.show()
+
+    print("\n📋 Kernel Comparison Results:")
+    print(results_df.to_string())
+    return results_df
+
+
+# ======================================================================
+# Critical Analysis  (Rubric Criterion 7 — Discussion & Future Work)
+# ======================================================================
+
+CRITICAL_ANALYSIS_TEXT = """
+================================================================================
+  CRITICAL ANALYSIS & DISCUSSION — SVM on Tree Carbon / Nitrogen Dataset
+================================================================================
+
+1. WHY SUPPORT VECTOR MACHINE?
+   ─────────────────────────────
+   SVM was chosen for three key reasons specific to this dataset:
+   • High-dimensional feature space (19 engineered features): SVM is
+     theoretically motivated for high-dimensional data because its
+     decision boundary depends only on support vectors, not all samples.
+   • Non-linear patterns: Carbon responses to nitrogen deposition are
+     geographically and ecologically complex. The RBF kernel maps data
+     into an infinite-dimensional space, capturing non-linear boundaries
+     that a linear model would miss.
+   • Robust to outliers: The ε-insensitive loss in SVR and the margin
+     formulation in SVC make SVM less sensitive to the extreme dC/dN
+     values present in this dataset than ordinary least squares.
+
+2. KERNEL COMPARISON — FINDINGS
+   ──────────────────────────────
+   Three kernels were evaluated (see kernel comparison chart):
+   • Linear kernel: Fastest to train; appropriate if classes are
+     linearly separable. Expected to underperform on this dataset due
+     to the non-linear geographic and ecoregion interactions.
+   • RBF kernel: Best general-purpose kernel. Handles non-linear
+     decision boundaries without needing to specify degree manually.
+     Sensitive to the C and gamma hyperparameters.
+   • Polynomial kernel: Can model interactions up to degree d. May
+     overfit on this dataset if degree is too high; generally slower
+     than RBF with fewer benefits here.
+
+3. LIMITATIONS OF SVM ON THIS DATASET
+   ──────────────────────────────────────
+   • Scalability: SVM training complexity is O(n²) to O(n³). With
+     77,455 training samples the full dataset required subsampling
+     to 10,000 rows — introducing a potential information loss of ~87%.
+   • No native feature importance: Unlike tree-based models, SVM has
+     no intrinsic feature importance scores. Permutation importance was
+     used as a post-hoc proxy, which is slower and less stable.
+   • Hyperparameter sensitivity: SVM performance is strongly dependent
+     on C and gamma. A coarse grid may miss the optimal region.
+   • Class imbalance: The binary target (carbon sink vs source) may be
+     imbalanced; class_weight='balanced' was applied as a mitigation
+     but does not fully resolve the issue.
+
+4. HOW ACCURACY COULD BE IMPROVED
+   ──────────────────────────────────
+   • Increase subsample size: Training on the full 77k rows (using
+     LinearSVC which scales as O(n)) would expose the model to more
+     patterns.
+   • Finer hyperparameter grid: Expand C range to [0.01, 0.1, 1, 10,
+     100, 1000] and gamma to [1e-4, 1e-3, 0.01, 0.1, 1].
+   • SMOTE oversampling: If class imbalance is confirmed, synthetic
+     minority oversampling before training could improve recall on the
+     minority class.
+   • Feature selection: Removing low-importance features (identified
+     via permutation importance) may reduce noise and speed up training,
+     allowing use of more data.
+   • Ensemble: Combine SVM predictions with those from the Random
+     Forest and Decision Tree teammates via soft-voting for a stronger
+     final model.
+
+5. FUTURE WORK
+   ────────────
+   • Temporal modelling: The dataset spans multiple FIA survey cycles.
+     Incorporating temporal features (survey year, change over time)
+     could capture trend information currently ignored.
+   • Spatial cross-validation: Standard k-fold ignores spatial
+     autocorrelation. Blocking by geographic region for CV would give
+     a more honest estimate of generalisation error.
+   • LinearSVC at scale: Train on the full dataset using LinearSVC
+     (based on liblinear, O(n) training) and compare against the
+     subsampled RBF SVM.
+   • Calibration: Use CalibratedClassifierCV to produce well-calibrated
+     probability estimates from SVC for downstream risk scoring.
+
+================================================================================
+"""
+
+
+def print_critical_analysis():
+    """Print the full critical analysis to the notebook output."""
+    print(CRITICAL_ANALYSIS_TEXT)
+
+
+def save_critical_analysis(filepath):
+    """Save the critical analysis text to a .txt report file."""
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    with open(filepath, "w") as f:
+        f.write(CRITICAL_ANALYSIS_TEXT)
+    print(f"📝 Critical analysis saved to: {filepath}")
