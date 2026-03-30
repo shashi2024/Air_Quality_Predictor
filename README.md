@@ -96,6 +96,32 @@ Raw Data → Ingestion → EDA → Preprocessing → Feature Engineering → Mod
 
 ---
 
+## 🤖 Model Notebooks (Random Forest & SVM)
+
+### 🌲 Random Forest (`notebooks/06_random_forest.ipynb`)
+
+**Easy explanation (for a 10‑year‑old):**
+Random Forest is like **many small trees** that each guess the answer. Then they **vote**, and the most common answer wins.
+
+**Inputs (what goes in):**
+- Cleaned data files in `data/processed/` (train/val/test or full dataset)
+- Feature columns = **clues** (numbers about each forest plot)
+- Target column = **answer** (what we want to predict)
+
+**Outputs (what comes out):**
+- Trained models saved in `outputs/models/`
+- Metrics saved in `outputs/reports/`
+- Plots like scatter charts, confusion matrices, ROC curves, and feature importance
+
+### 🤖 SVM (`notebooks/06_svm_model.ipynb`)
+- Trains Support Vector Machine models for the same targets
+- Saves metrics and plots in the same `outputs/` folders
+
+**Run order:**
+Run notebooks `01 → 02 → 03 → 04 → 05` first to create the model‑ready data, then run `06_random_forest.ipynb` or `06_svm_model.ipynb`.
+
+---
+
 ## 📦 Requirements
 
 - Python ≥ 3.8
