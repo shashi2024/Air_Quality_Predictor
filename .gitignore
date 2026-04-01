@@ -36,3 +36,9 @@ Thumbs.db
 # IDEs
 .vscode/
 .idea/
+
+
+outputs/
+*.joblib
+*.pkl
+*.h5
