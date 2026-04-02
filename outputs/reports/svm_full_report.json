@@ -1,0 +1,78 @@
+{
+  "model_type": "SVM (Support Vector Machine)",
+  "library": "scikit-learn",
+  "random_state": 42,
+  "subsample_size": 10000,
+  "feature_count": 19,
+  "features_used": [
+    "EXPN.ha_scaled",
+    "LAT_scaled",
+    "LON_scaled",
+    "eco.EXPN.ha_scaled",
+    "feat_carbon_sink",
+    "feat_eco3_target_mean",
+    "feat_eco_state_ratio",
+    "feat_enc_NA_L1CODE",
+    "feat_enc_NA_L3CODE",
+    "feat_enc_US_L4CODE",
+    "feat_enc_state",
+    "feat_expanded_per_ha",
+    "feat_growth_share",
+    "feat_gs_ratio",
+    "feat_lat_bin",
+    "feat_lat_x_eco1",
+    "feat_log_magnitude",
+    "feat_lon_bin",
+    "state.EXPN.ha_scaled"
+  ],
+  "svr_raw_best_params": {
+    "C": 10,
+    "epsilon": 0.1,
+    "gamma": "scale",
+    "kernel": "rbf"
+  },
+  "svr_log_best_params": {
+    "C": 1,
+    "epsilon": 0.1,
+    "gamma": "scale",
+    "kernel": "linear"
+  },
+  "svc_binary_best_params": {
+    "C": 0.1,
+    "gamma": "scale",
+    "kernel": "linear"
+  },
+  "svc_multi_best_params": {
+    "C": 10,
+    "gamma": "scale",
+    "kernel": "linear"
+  },
+  "results": {
+    "SVR_Raw": {
+      "MAE": 1.2185668431051964,
+      "RMSE": 6.251946175859998,
+      "R2": 0.9710741953823281,
+      "MAPE": 38218838125775.9
+    },
+    "SVR_Log": {
+      "MAE": 0.041271061683381294,
+      "RMSE": 0.04948117469065056,
+      "R2": 0.9996490433058569,
+      "MAPE": 24730405341947.22
+    },
+    "SVC_Binary": {
+      "Accuracy": 1.0,
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1_Score": 1.0,
+      "ROC_AUC": 1.0
+    },
+    "SVC_Multi3": {
+      "Accuracy": 0.9951801421858055,
+      "Precision": 0.9951786975659249,
+      "Recall": 0.9951801421858055,
+      "F1_Score": 0.9951780938970631,
+      "ROC_AUC": 0.9999311931006643
+    }
+  }
+}
